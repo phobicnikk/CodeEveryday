@@ -1,24 +1,40 @@
 class Solution {
     public int[] relativeSortArray(int[] arr1, int[] arr2) {
-        Map<Integer, Integer> freqMp = new TreeMap<>();
-        for(var num : arr1){
-            freqMp.put(num, freqMp.getOrDefault(num, 0) + 1);
-        }
-        int indx = 0;
-        for(var num : arr2){
-            int freq = freqMp.get(num);
-            while(freq-->0){
-                arr1[indx++] = num;
-            }
-            freqMp.put(num, 0);
-        }
-        for(var entry : freqMp.entrySet()){
-            var num = entry.getKey();
-            var freq = entry.getValue();
-            while(freq-->0){
-                arr1[indx++] = num;
+        HashMap<Integer,Integer> hm = new HashMap<>();
+        for (int j : arr1) {
+            if (hm.containsKey(j)) {
+                hm.put(j, hm.get(j) + 1);
+            } else {
+                hm.put(j, 1);
             }
         }
-        return arr1;
+        int[] ans = new int[arr1.length];
+        int cnt=0;
+        for (int j : arr2) {
+            while (hm.get(j) > 0) {
+                ans[cnt] = j;
+                cnt++;
+                hm.put(j, hm.get(j) - 1);
+            }
+            hm.remove(j);
+        }
+        int[] remaining = new int[arr1.length-cnt];
+        int index = 0;
+        for (int j : arr1) {
+            if (hm.containsKey(j)) {
+                while (hm.get(j) > 0) {
+                    remaining[index] = j;
+                    index++;
+                    hm.put(j, hm.get(j) - 1);
+                }
+                hm.remove(j);
+            }
+        }
+        Arrays.sort(remaining);
+        for (int j : remaining) {
+            ans[cnt] = j;
+            cnt++;
+        }
+        return ans;
     }
 }
